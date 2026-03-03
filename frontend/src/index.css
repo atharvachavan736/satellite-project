@@ -216,3 +216,29 @@ body, html, #root {
 .blinking-dot {
   animation: blink 1.5s infinite ease-in-out;
 }
+
+/* Mobile Styles (Phones) */
+@media (max-width: 768px) {
+  .top-bar {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start !important;
+  }
+
+  .search-container {
+    width: 100%;
+  }
+
+  .search-input {
+    width: 70% !important;
+  }
+
+  /* Stack panels or make them full width on mobile */
+  .dashboard-panel, .detailed-panel {
+    width: 90% !important;
+    left: 5% !important;
+    right: 5% !important;
+    bottom: 20px !important;
+    font-size: 12px;
+  }
+}

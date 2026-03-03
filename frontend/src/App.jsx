@@ -138,42 +138,62 @@ function App() {
       )}
 
       {/* --- 3D SCENE --- */}
-      <Canvas camera={{ position: [0, 0, 16], fov: 45 }}>
-        <color attach="background" args={['#000000']} />
-        <ambientLight intensity={0.8} />
-        <pointLight position={[20, 20, 20]} intensity={1.5} />
+      <Canvas 
+  // Dynamically adjust camera based on screen size
+  camera={{ 
+    position: [0, 0, window.innerWidth < 768 ? 20 : 16], 
+    fov: window.innerWidth < 768 ? 60 : 45 
+  }}
+  // Prevents the page from scrolling while a user rotates the globe on touch screens
+  style={{ touchAction: 'none' }}
+>
+  <color attach="background" args={['#000000']} />
+  <ambientLight intensity={0.8} />
+  <pointLight position={[20, 20, 20]} intensity={1.5} />
 
-        <Suspense fallback={null}>
-          <Earth />
-          <SatelliteSwarm onSelectSatellite={setSelectedSat} />
+  <Suspense fallback={null}>
+    <Earth />
+    <SatelliteSwarm onSelectSatellite={setSelectedSat} />
 
-          {/* Green Trajectory Line */}
-          {fullData && fullData.trajectory && fullData.trajectory.length > 1 && (
-            <Line
-              points={fullData.trajectory.map(p => [p[0] * (5/6371)*6.25, p[2] * (5/6371)*6.25, p[1] * (5/6371)*6.25])}
-              color="#10b981"
-              lineWidth={2}
-              opacity={0.5}
-              transparent
-            />
-          )}
+    {/* Green Trajectory Line */}
+    {fullData && fullData.trajectory && fullData.trajectory.length > 1 && (
+      <Line
+        points={fullData.trajectory.map(p => [
+          p[0] * (5/6371)*6.25, 
+          p[2] * (5/6371)*6.25, 
+          p[1] * (5/6371)*6.25
+        ])}
+        color="#10b981"
+        lineWidth={window.innerWidth < 768 ? 1 : 2} // Thinner line for mobile density
+        opacity={0.5}
+        transparent
+      />
+    )}
 
-          {/* Red Target Marker */}
-          {fullData && fullData.trajectory && fullData.trajectory.length > 0 && (
-            <mesh position={[
-              fullData.trajectory[0][0] * (5/6371)*6.25,
-              fullData.trajectory[0][2] * (5/6371)*6.25,
-              fullData.trajectory[0][1] * (5/6371)*6.25
-            ]}>
-              <sphereGeometry args={[0.05, 16, 16]} />
-              <meshBasicMaterial color="#ef4444" />
-            </mesh>
-          )}
+    {/* Red Target Marker */}
+    {fullData && fullData.trajectory && fullData.trajectory.length > 0 && (
+      <mesh position={[
+        fullData.trajectory[0][0] * (5/6371)*6.25,
+        fullData.trajectory[0][2] * (5/6371)*6.25,
+        fullData.trajectory[0][1] * (5/6371)*6.25
+      ]}>
+        <sphereGeometry args={[window.innerWidth < 768 ? 0.08 : 0.05, 16, 16]} />
+        <meshBasicMaterial color="#ef4444" />
+      </mesh>
+    )}
 
-          <Stars radius={200} count={6000} factor={4} fade />
-        </Suspense>
-        <OrbitControls minDistance={6} maxDistance={50} enablePan={false} />
-      </Canvas>
+    <Stars radius={200} count={window.innerWidth < 768 ? 3000 : 6000} factor={4} fade />
+  </Suspense>
+  
+  <OrbitControls 
+    minDistance={6} 
+    maxDistance={50} 
+    enablePan={false}
+    // Ensures smooth rotation on mobile browsers
+    enableDamping={true}
+    dampingFactor={0.05}
+  />
+</Canvas>
     </div>
   );
 }
