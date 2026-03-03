@@ -5,3 +5,7 @@ pydantic
 requests
 PyJWT
 httpx
+sgp4
+numpy
+pandas
+scikit-learn
